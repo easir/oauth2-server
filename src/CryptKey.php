@@ -11,6 +11,8 @@
 
 namespace League\OAuth2\Server;
 
+use Exception;
+
 class CryptKey
 {
     const RSA_KEY_PATTERN =
@@ -29,6 +31,7 @@ class CryptKey
     /**
      * @param string      $keyPath
      * @param null|string $passPhrase
+     * @throws Exception
      */
     public function __construct($keyPath, $passPhrase = null)
     {
@@ -50,22 +53,34 @@ class CryptKey
 
     /**
      * @param string $key
-     *
-     * @throws \RuntimeException
-     *
+     * @throws Exception
      * @return string
      */
     private function saveKeyToFile($key)
     {
-        $keyPath = sys_get_temp_dir() . '/' . sha1($key) . '.key';
+        $keyPath = sprintf('%s/%s.key', sys_get_temp_dir(), sha1($key));
 
-        if (!file_exists($keyPath) && !touch($keyPath)) {
-            // @codeCoverageIgnoreStart
-            throw new \RuntimeException('"%s" key file could not be created', $keyPath);
-            // @codeCoverageIgnoreEnd
+        $handle = null;
+
+        try {
+            if (!is_file($keyPath) || filesize($keyPath) === 0) {
+                $handle = fopen($keyPath, 'w+');
+                $ret = flock($handle, LOCK_EX);
+                if (!$ret) {
+                    throw new Exception(sprintf('Could not acquire lockfile %s!', $keyPath));
+                }
+                //recheck if file is empty (maybe have  already been written by another process!)
+                if (filesize($keyPath) === 0) {
+                    file_put_contents($keyPath, $key);
+                }
+            }
+        } catch (Exception $e) {
+            throw new Exception(sprintf('Could not write key to %s!', $keyPath));
+        } finally {
+            if (is_resource($handle)) {
+                flock($handle, LOCK_UN);
+            }
         }
-
-        file_put_contents($keyPath, $key);
 
         return 'file://' . $keyPath;
     }
