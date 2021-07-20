@@ -70,7 +70,7 @@ class AbstractGrantTest extends \PHPUnit_Framework_TestCase
             [
                 'foo' => (new ScopeEntity($server))->hydrate(['id' => 'foo']),
             ],
-            $grant->validateScopes('foo', $client)
+            $grant->validateScopes($client, 'foo')
         );
     }
 
@@ -90,7 +90,7 @@ class AbstractGrantTest extends \PHPUnit_Framework_TestCase
 
         $client = (new ClientEntity($server))->hydrate(['id' => 'testapp']);
 
-        $grant->validateScopes(null, $client);
+        $grant->validateScopes($client, null);
     }
 
     public function testValidateScopesInvalidScope()
@@ -109,7 +109,7 @@ class AbstractGrantTest extends \PHPUnit_Framework_TestCase
 
         $client = (new ClientEntity($server))->hydrate(['id' => 'testapp']);
 
-        $grant->validateScopes('blah', $client);
+        $grant->validateScopes($client, 'blah');
     }
 
     public function testValidateScopesDefaultScope()
@@ -132,7 +132,7 @@ class AbstractGrantTest extends \PHPUnit_Framework_TestCase
 
         $client = (new ClientEntity($server))->hydrate(['id' => 'testapp']);
 
-        $grant->validateScopes(null, $client);
+        $grant->validateScopes($client, null);
     }
 
     public function testValidateScopesDefaultScopeArray()
@@ -155,6 +155,6 @@ class AbstractGrantTest extends \PHPUnit_Framework_TestCase
 
         $client = (new ClientEntity($server))->hydrate(['id' => 'testapp']);
 
-        $grant->validateScopes(null, $client);
+        $grant->validateScopes($client, null);
     }
 }
