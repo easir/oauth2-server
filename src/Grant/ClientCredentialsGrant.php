@@ -87,7 +87,7 @@ class ClientCredentialsGrant extends AbstractGrant
 
         // Validate any scopes that are in the request
         $scopeParam = $this->server->getRequest()->request->get('scope', '');
-        $scopes = $this->validateScopes($scopeParam, $client);
+        $scopes = $this->validateScopes($client, $scopeParam);
 
         // Create a new session
         $session = new SessionEntity($this->server);

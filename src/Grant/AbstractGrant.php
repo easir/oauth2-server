@@ -132,7 +132,7 @@ abstract class AbstractGrant implements GrantTypeInterface
      * @throws \League\OAuth2\Server\Exception\InvalidScopeException If scope is invalid, or no scopes passed when required
      * @throws
      */
-    public function validateScopes($scopeParam = '', ClientEntity $client, $redirectUri = null)
+    public function validateScopes(ClientEntity $client, $scopeParam = '', $redirectUri = null)
     {
         $scopesList = explode($this->server->getScopeDelimiter(), $scopeParam);
 
